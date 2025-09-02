@@ -16,11 +16,13 @@ import { auth } from '@/lib/supabase'
 
 const navigation = [
   { name: 'Products', href: '/products', icon: Package },
+  { name: 'My Requests', href: '/requests', icon: HelpCircle },
+  { name: 'My Invoices', href: '/invoices', icon: FileText },
   { name: 'Orders', href: '/orders', icon: ShoppingCart },
-  { name: 'Invoices', href: '/invoices', icon: FileText },
-  { name: 'Requests', href: '/requests', icon: HelpCircle },
+  { name: 'My Orders', href: '/my-orders', icon: ShoppingCart },
+  { name: 'My Shipments', href: '/my-shipments', icon: Truck },
   { name: 'Messages', href: '/messages', icon: MessageSquare },
-  { name: 'Shipments', href: '/shipments', icon: Truck },
+  { name: 'Admin Dashboard', href: '/admin', icon: Settings },
   { name: 'Settings', href: '/settings', icon: Settings },
 ]
 

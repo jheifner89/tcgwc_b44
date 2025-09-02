@@ -6,6 +6,9 @@ import Layout from '@/components/Layout'
 import AuthForm from '@/components/AuthForm'
 import Dashboard from '@/pages/Dashboard'
 import Products from '@/pages/Products'
+import AdminDashboard from '@/pages/AdminDashboard'
+import MyRequests from '@/pages/MyRequests'
+import MyInvoices from '@/pages/MyInvoices'
 
 function App() {
   const [user, setUser] = useState(null)
@@ -46,11 +49,13 @@ function App() {
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/products" element={<Products user={user} />} />
+          <Route path="/admin" element={<AdminDashboard user={user} />} />
+          <Route path="/requests" element={<MyRequests user={user} />} />
+          <Route path="/invoices" element={<MyInvoices user={user} />} />
           <Route path="/orders" element={<div>Orders - Coming Soon</div>} />
-          <Route path="/invoices" element={<div>Invoices - Coming Soon</div>} />
-          <Route path="/requests" element={<div>Requests - Coming Soon</div>} />
+          <Route path="/my-orders" element={<div>My Orders - Coming Soon</div>} />
+          <Route path="/my-shipments" element={<div>My Shipments - Coming Soon</div>} />
           <Route path="/messages" element={<div>Messages - Coming Soon</div>} />
-          <Route path="/shipments" element={<div>Shipments - Coming Soon</div>} />
           <Route path="/settings" element={<div>Settings - Coming Soon</div>} />
         </Routes>
       </Layout>

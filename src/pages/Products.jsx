@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Search, Filter, Upload, Plus } from 'lucide-react'
+import { Label } from '@/components/ui/label'
+import { Search, Filter } from 'lucide-react'
 import { db } from '@/lib/supabase'
 import ProductCard from '@/components/ProductCard'
 import RequestDialog from '@/components/RequestDialog'
-import ImportDialog from '@/components/ImportDialog'
 
 export default function Products({ user }) {
   const [products, setProducts] = useState([])
@@ -22,7 +20,6 @@ export default function Products({ user }) {
   const [inStockOnly, setInStockOnly] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [showRequestDialog, setShowRequestDialog] = useState(false)
-  const [showImportDialog, setShowImportDialog] = useState(false)
 
   // Get unique values for filters
   const categories = [...new Set(products.map(p => p.product_line).filter(Boolean))]
@@ -89,10 +86,6 @@ export default function Products({ user }) {
     setShowRequestDialog(true)
   }
 
-  const handleImportComplete = () => {
-    loadProducts()
-  }
-
   if (loading) {
     return (
       <div className="space-y-6">
@@ -122,16 +115,6 @@ export default function Products({ user }) {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Product Catalog</h1>
           <p className="text-gray-600 mt-2">Browse and request products from our trusted distributors.</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setShowImportDialog(true)}>
-            <Upload className="h-4 w-4 mr-2" />
-            Import CSV
-          </Button>
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Product
-          </Button>
         </div>
       </div>
 
@@ -236,11 +219,7 @@ export default function Products({ user }) {
                 {products.length === 0 ? (
                   <div>
                     <h3 className="text-lg font-medium mb-2">No products found</h3>
-                    <p className="mb-4">Get started by importing your product catalog.</p>
-                    <Button onClick={() => setShowImportDialog(true)}>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Import Products
-                    </Button>
+                    <p className="mb-4">Contact your administrator to add products to the catalog.</p>
                   </div>
                 ) : (
                   <div>
@@ -268,13 +247,6 @@ export default function Products({ user }) {
         open={showRequestDialog}
         onOpenChange={setShowRequestDialog}
         user={user}
-      />
-
-      {/* Import Dialog */}
-      <ImportDialog
-        open={showImportDialog}
-        onOpenChange={setShowImportDialog}
-        onImportComplete={handleImportComplete}
       />
     </div>
   )
