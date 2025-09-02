@@ -30,6 +30,11 @@ export default function ProductCard({ product, onRequest }) {
     return 'text-red-600'
   }
 
+  const displayPrice = product.override_price && 
+    (!product.override_end_date || new Date(product.override_end_date) > new Date()) 
+    ? product.override_price 
+    : (product.wholesale_price || product.price || 0)
+
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-4">
@@ -48,9 +53,16 @@ export default function ProductCard({ product, onRequest }) {
 
           {/* Product Details */}
           <div className="flex-1 min-w-0">
-            <h3 className="font-medium text-gray-900 mb-2 line-clamp-2">
-              {product.name}
-            </h3>
+            <div className="flex justify-between items-start mb-2">
+              <h3 className="font-medium text-gray-900 line-clamp-2">
+                {product.name}
+              </h3>
+              {product.is_sample && (
+                <Badge variant="secondary" className="text-xs ml-2">
+                  Sample
+                </Badge>
+              )}
+            </div>
             
             <div className="flex flex-wrap gap-2 mb-3">
               <Badge variant="secondary" className="text-xs">
@@ -69,11 +81,19 @@ export default function ProductCard({ product, onRequest }) {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-lg font-bold text-gray-900">
-                  {formatCurrency(product.wholesale_price || product.price || 0)}
+                  {formatCurrency(displayPrice)}
+                  {product.override_price && (
+                    <span className="text-sm text-gray-500 line-through ml-2">
+                      {formatCurrency(product.wholesale_price || product.price || 0)}
+                    </span>
+                  )}
                 </div>
                 <div className={`text-sm font-medium ${getStockColor(product.in_stock, product.availability)}`}>
                   Stock: {getStockStatus(product.in_stock, product.availability)}
                 </div>
+                {product.sku && (
+                  <div className="text-xs text-gray-500">SKU: {product.sku}</div>
+                )}
               </div>
 
               <div className="flex items-center gap-2">
@@ -85,10 +105,24 @@ export default function ProductCard({ product, onRequest }) {
                   size="sm"
                   onClick={() => onRequest(product)}
                   className="bg-gray-800 hover:bg-gray-700 text-white"
+                  disabled={!product.approved || (!product.in_stock && product.availability !== 'pre-order')}
                 >
                   Request
                 </Button>
               </div>
+            </div>
+
+            {/* Additional product info */}
+            <div className="mt-3 text-xs text-gray-500 space-y-1">
+              {product.release_date && (
+                <div>Release Date: {new Date(product.release_date).toLocaleDateString()}</div>
+              )}
+              {product.orders_due_date && (
+                <div>Orders Due: {new Date(product.orders_due_date).toLocaleDateString()}</div>
+              )}
+              {product.override_end_date && (
+                <div>Special Price Until: {new Date(product.override_end_date).toLocaleDateString()}</div>
+              )}
             </div>
           </div>
         </div>

@@ -11,7 +11,8 @@ import {
   HelpCircle,
   LogOut,
   User,
-  LayoutDashboard
+  LayoutDashboard,
+  Shield
 } from 'lucide-react'
 import { auth } from '@/lib/supabase'
 
@@ -22,7 +23,9 @@ const navigation = [
   { name: 'My Invoices', href: '/invoices', icon: FileText },
   { name: 'My Orders', href: '/orders', icon: ShoppingCart },
   { name: 'My Shipments', href: '/shipments', icon: Truck },
-  { name: 'Admin Dashboard', href: '/admin', icon: Settings },
+  { name: 'Messages', href: '/messages', icon: MessageSquare },
+  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Admin Dashboard', href: '/admin', icon: Shield },
 ]
 
 export default function Layout({ children, user }) {
