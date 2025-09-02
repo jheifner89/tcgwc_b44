@@ -8,13 +8,23 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { db } from '@/lib/supabase'
 
 export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
-  const [csvData, setCsvData] = useState('')
+  const [selectedFile, setSelectedFile] = useState(null)
   const [loading, setLoading] = useState(false)
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]
+    if (file && file.type === 'text/csv') {
+      setSelectedFile(file)
+    } else {
+      alert('Please select a valid CSV file')
+      e.target.value = ''
+    }
+  }
 
   const parseCsvData = (csvText) => {
     const lines = csvText.trim().split('\n')
@@ -102,11 +112,12 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
   }
 
   const handleImport = async () => {
-    if (!csvData.trim()) return
+    if (!selectedFile) return
     
     setLoading(true)
     try {
-      const products = parseCsvData(csvData)
+      const csvText = await selectedFile.text()
+      const products = parseCsvData(csvText)
       
       // Import products in batches
       const batchSize = 50
@@ -116,7 +127,11 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
         if (error) throw error
       }
       
-      setCsvData('')
+      setSelectedFile(null)
+      // Reset file input
+      const fileInput = document.getElementById('csv-file')
+      if (fileInput) fileInput.value = ''
+      
       onOpenChange(false)
       onImportComplete()
       alert(`Successfully imported ${products.length} products!`)
@@ -134,21 +149,25 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
         <DialogHeader>
           <DialogTitle>Import Products from CSV</DialogTitle>
           <DialogDescription>
-            Paste your CSV data below. Expected columns: sku, name, distributor, product_line, wholesale_price, availability, in_stock, image_url, etc.
+            Upload a CSV file with your product data. Expected columns: sku, name, distributor, product_line, wholesale_price, availability, in_stock, image_url, etc.
           </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="csv-data">CSV Data</Label>
-            <Textarea
-              id="csv-data"
-              value={csvData}
-              onChange={(e) => setCsvData(e.target.value)}
-              placeholder="Paste your CSV data here..."
-              rows={10}
-              className="font-mono text-sm"
+            <Label htmlFor="csv-file">CSV File</Label>
+            <Input
+              id="csv-file"
+              type="file"
+              accept=".csv"
+              onChange={handleFileChange}
+              className="cursor-pointer"
             />
+            {selectedFile && (
+              <div className="text-sm text-gray-600">
+                Selected file: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(1)} KB)
+              </div>
+            )}
           </div>
         </div>
 
@@ -156,7 +175,7 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleImport} disabled={loading || !csvData.trim()}>
+          <Button onClick={handleImport} disabled={loading || !selectedFile}>
             {loading ? 'Importing...' : 'Import Products'}
           </Button>
         </DialogFooter>
