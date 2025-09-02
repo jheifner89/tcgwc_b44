@@ -11,37 +11,48 @@ This document tracks functionality that cannot be recreated from the frontend co
 - **Pricing logic** - How are wholesale vs override prices calculated and applied?
 - **Stock management** - How is inventory tracked and updated?
 - **Product image handling** - How are product images uploaded and stored?
+- **Product editing in admin** - How to update product information
+- **Product deletion logic** - Soft delete vs hard delete behavior
 
-### User Management
+### User Management (Admin Dashboard - Users Tab)
 - **User roles and permissions** - What specific roles exist beyond "admin" and "member"?
 - **User registration workflow** - How are new users onboarded?
 - **Membership status logic** - What determines membership status changes?
 - **Account credit system** - How are credits earned, spent, and managed?
 - **Reseller functionality** - What special features do resellers have?
 - **User profile updates** - How to update user information in the users table?
+- **User creation from admin** - How admins can create new user accounts
+- **User export functionality** - What user data should be exported
 
-### Request Management
+### Request Management (Admin Dashboard - Requests Tab)
 - **Request assignment logic** - How are requests automatically assigned?
 - **Request workflow** - What triggers status changes from pending → in_progress → completed?
 - **Notification system** - When and how are users notified of request updates?
 - **Request approval process** - Who can approve/reject requests?
 - **Request to order conversion** - How are approved requests converted to orders?
+- **Request editing from admin** - How admins can update request status and details
+- **Request export functionality** - What request data should be exported
 
-### Invoice Management
+### Invoice Management (Admin Dashboard - Invoices Tab)
 - **Invoice generation logic** - How are invoices automatically created from orders/requests?
 - **Tax calculation** - How are tax amounts calculated based on location/rules?
 - **Payment integration** - How does payment processing work with Stripe?
 - **Invoice templates** - What does the PDF invoice template look like?
 - **Automatic invoice sending** - When and how are invoices sent to customers?
 - **PDF generation** - How are invoice PDFs generated and downloaded?
+- **Invoice creation from admin** - How admins can manually create invoices
+- **Invoice line item management** - How to add/edit/remove line items
+- **Invoice export functionality** - What invoice data should be exported
 
-### Order Management
+### Order Management (Admin Dashboard - Orders Tab)
 - **Order creation workflow** - How are orders created from requests/quotes?
 - **Payment processing** - Integration with payment gateways
 - **Order fulfillment** - How does the fulfillment process work?
 - **Shipping calculation** - How are shipping costs calculated?
 - **Order status automation** - What triggers automatic status updates?
 - **Order line items** - How are order items structured and managed?
+- **Order creation from admin** - How admins can manually create orders
+- **Order export functionality** - What order data should be exported
 
 ### Shipment Management
 - **Carrier integration** - How does tracking number generation work?
@@ -49,6 +60,7 @@ This document tracks functionality that cannot be recreated from the frontend co
 - **Delivery tracking** - How are delivery updates received and processed?
 - **Return processing** - How are returns handled?
 - **External tracking links** - How to generate carrier-specific tracking URLs?
+- **Shipment creation from orders** - How shipments are created from orders
 
 ### Message System
 - **Message creation** - How are system messages automatically generated?
@@ -116,6 +128,7 @@ This document tracks functionality that cannot be recreated from the frontend co
 - ✅ Override pricing display logic
 - ✅ Sample product badges
 - ✅ Release date and order due date display
+- ✅ Request dialog with product details and form submission
 
 ### Request System
 - ✅ Request dialog with product details
@@ -123,6 +136,7 @@ This document tracks functionality that cannot be recreated from the frontend co
 - ✅ Request listing with status and priority badges
 - ✅ Request filtering and search
 - ✅ Request status color coding
+- ✅ Request creation from product catalog
 
 ### Invoice System
 - ✅ Invoice listing with status badges
@@ -150,6 +164,7 @@ This document tracks functionality that cannot be recreated from the frontend co
 - ✅ Message filtering by type and read status
 - ✅ Message type color coding
 - ✅ Message content display
+- ✅ Mark as read functionality
 
 ### Settings System
 - ✅ Tabbed settings interface (Profile, Notifications, Security, Billing)
@@ -160,14 +175,16 @@ This document tracks functionality that cannot be recreated from the frontend co
 ### Admin Dashboard
 - ✅ Tabbed admin interface (Products, Users, Requests, Invoices, Orders)
 - ✅ Product management table with actions
-- ✅ CSV import dialog with file upload
+- ✅ CSV import dialog with file upload and parsing
 - ✅ Export and sync buttons (UI only)
 - ✅ Admin request, invoice, and order management tables
+- ✅ Product filtering in admin view
+- ✅ Status and priority color coding across all admin tables
 
 ## 📝 IMPLEMENTATION NOTES
 
 ### What's Working Now:
-- Complete UI matching original GitHub repository
+- Complete UI matching original GitHub repository structure
 - All navigation and routing
 - Data display and formatting
 - Frontend filtering and search
@@ -176,6 +193,8 @@ This document tracks functionality that cannot be recreated from the frontend co
 - Status badges and color coding
 - Responsive design
 - Dashboard with Spend History and Message Center modules
+- Product request submission
+- CSV import parsing (frontend only)
 
 ### What Needs Backend Implementation:
 - All CRUD operations beyond basic create/read
@@ -185,8 +204,11 @@ This document tracks functionality that cannot be recreated from the frontend co
 - Email and notification systems
 - Real-time updates and synchronization
 - Advanced reporting and analytics
+- Admin management functions (edit/delete/update)
+- User profile management
+- Settings persistence
 
 ---
 
-**Last Updated:** Dashboard fixed to match original structure
-**Status:** Frontend structure now matches GitHub repository, tracking backend functionality gaps
+**Last Updated:** All pages now match GitHub repository structure
+**Status:** Frontend structure complete, comprehensive backend functionality tracking in place
