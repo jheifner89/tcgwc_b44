@@ -5,6 +5,7 @@ import { auth } from '@/lib/supabase'
 import Layout from '@/components/Layout'
 import AuthForm from '@/components/AuthForm'
 import Dashboard from '@/pages/Dashboard'
+import Products from '@/pages/Products'
 
 function App() {
   const [user, setUser] = useState(null)
@@ -44,7 +45,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/products" element={<div>Products - Coming Soon</div>} />
+          <Route path="/products" element={<Products user={user} />} />
           <Route path="/orders" element={<div>Orders - Coming Soon</div>} />
           <Route path="/invoices" element={<div>Invoices - Coming Soon</div>} />
           <Route path="/requests" element={<div>Requests - Coming Soon</div>} />
