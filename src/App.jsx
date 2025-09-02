@@ -9,6 +9,10 @@ import Products from '@/pages/Products'
 import AdminDashboard from '@/pages/AdminDashboard'
 import MyRequests from '@/pages/MyRequests'
 import MyInvoices from '@/pages/MyInvoices'
+import MyOrders from '@/pages/MyOrders'
+import MyShipments from '@/pages/MyShipments'
+import Messages from '@/pages/Messages'
+import Settings from '@/pages/Settings'
 
 function App() {
   const [user, setUser] = useState(null)
@@ -52,11 +56,10 @@ function App() {
           <Route path="/admin" element={<AdminDashboard user={user} />} />
           <Route path="/requests" element={<MyRequests user={user} />} />
           <Route path="/invoices" element={<MyInvoices user={user} />} />
-          <Route path="/orders" element={<div>Orders - Coming Soon</div>} />
-          <Route path="/my-orders" element={<div>My Orders - Coming Soon</div>} />
-          <Route path="/my-shipments" element={<div>My Shipments - Coming Soon</div>} />
-          <Route path="/messages" element={<div>Messages - Coming Soon</div>} />
-          <Route path="/settings" element={<div>Settings - Coming Soon</div>} />
+          <Route path="/orders" element={<MyOrders user={user} />} />
+          <Route path="/shipments" element={<MyShipments user={user} />} />
+          <Route path="/messages" element={<Messages user={user} />} />
+          <Route path="/settings" element={<Settings user={user} />} />
         </Routes>
       </Layout>
     </Router>

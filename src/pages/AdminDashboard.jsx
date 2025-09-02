@@ -376,16 +376,3 @@ export default function AdminDashboard({ user }) {
     </div>
   )
 }
-
-const handleDeleteProduct = async (productId) => {
-  if (confirm('Are you sure you want to delete this product?')) {
-    try {
-      const { error } = await db.deleteProduct(productId)
-      if (error) throw error
-      loadProducts()
-    } catch (error) {
-      console.error('Error deleting product:', error)
-      alert('Error deleting product')
-    }
-  }
-}
