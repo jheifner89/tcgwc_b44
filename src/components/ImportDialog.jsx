@@ -179,7 +179,7 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[90vw] max-w-2xl">
+      <DialogContent className="w-[95vw] max-w-4xl">
         <DialogHeader>
           <DialogTitle>Import Products from CSV</DialogTitle>
           <DialogDescription>
@@ -207,9 +207,11 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
           {/* CSV Format Example */}
           <div className="bg-gray-50 p-4 rounded-lg">
             <h4 className="font-medium text-sm mb-2">Expected CSV Format:</h4>
-            <code className="text-xs text-gray-600 block break-all overflow-hidden">
-              product_line,sku,name,wholesale_price,release_date,orders_due_date,availability,in_stock,image_url,product_url,distributor
-            </code>
+            <div className="bg-white p-2 rounded border overflow-x-auto">
+              <code className="text-xs text-gray-600 whitespace-nowrap">
+                product_line,sku,name,wholesale_price,release_date,orders_due_date,availability,in_stock,image_url,product_url,distributor
+              </code>
+            </div>
             <div className="mt-2 text-xs text-gray-500">
               <p>• Dates should be in MM/DD/YYYY format or "---" for empty</p>
               <p>• in_stock should be "True" or "False"</p>
