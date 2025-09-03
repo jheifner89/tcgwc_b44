@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent } from '@/components/ui/card'
 import { db } from '@/lib/supabase'
 import ImportDialog from '@/components/ImportDialog'
 import ProductsTab from '@/components/admin/ProductsTab'
