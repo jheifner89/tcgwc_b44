@@ -66,7 +66,6 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
         distributor: values[10]?.replace(/"/g, '') || '',
         
         // Set additional required fields with defaults
-        category: values[0]?.replace(/"/g, '') || '', // Use product_line as category
         description: '',
         cost: 0,
         stock_quantity: values[7]?.replace(/"/g, '').toLowerCase() === 'true' ? 1 : 0,
@@ -148,8 +147,6 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
       
       // Reset form state
       setSelectedFile(null)
-      setPreviewData([])
-      setShowPreview(false)
       
       // Reset file input
       const fileInput = document.getElementById('csv-file')
