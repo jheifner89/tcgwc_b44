@@ -1,0 +1,56 @@
+import React from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { MessageSquare } from 'lucide-react'
+import { formatDate } from '@/lib/utils'
+
+export default function MessageCenter({ unreadCount, recentMessages }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <MessageSquare className="h-5 w-5" />
+          Message Center
+        </CardTitle>
+        <CardDescription>Recent messages and notifications</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-medium">Unread Messages</span>
+            <span className="text-lg font-bold text-blue-600">{unreadCount}</span>
+          </div>
+          
+          <div className="space-y-3">
+            {recentMessages.length === 0 ? (
+              <div className="text-center text-gray-500 py-4">
+                <p>No new messages</p>
+              </div>
+            ) : (
+              recentMessages.map((message) => (
+                <div key={message.id} className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <p className="font-medium text-sm text-gray-900">{message.subject}</p>
+                      <p className="text-xs text-gray-600 mt-1 line-clamp-2">{message.content}</p>
+                      <p className="text-xs text-gray-500 mt-1">{formatDate(message.created_at)}</p>
+                    </div>
+                    <Button size="sm" variant="outline" className="ml-2">
+                      View
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+          
+          {recentMessages.length > 0 && (
+            <Button variant="outline" className="w-full">
+              View All Messages
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}

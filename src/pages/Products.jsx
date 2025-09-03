@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
-import { Search } from 'lucide-react'
 import { db } from '@/lib/supabase'
-import ProductCard from '@/components/ProductCard'
+import ProductFilters from '@/components/ProductFilters'
+import ProductList from '@/components/ProductList'
 import RequestDialog from '@/components/RequestDialog'
 
 export default function Products({ user }) {
@@ -118,109 +113,23 @@ export default function Products({ user }) {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white p-4 rounded-lg shadow-sm border">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+      <ProductFilters
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+        selectedDistributor={selectedDistributor}
+        setSelectedDistributor={setSelectedDistributor}
+        selectedAvailability={selectedAvailability}
+        setSelectedAvailability={setSelectedAvailability}
+        inStockOnly={inStockOnly}
+        setInStockOnly={setInStockOnly}
+        categories={categories}
+        distributors={distributors}
+        availabilities={availabilities}
+      />
 
-          {/* Category Filter */}
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-            <SelectTrigger>
-              <SelectValue placeholder="All Categories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {categories.map(category => (
-                <SelectItem key={category} value={category}>
-                  {category}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* Distributor Filter */}
-          <Select value={selectedDistributor} onValueChange={setSelectedDistributor}>
-            <SelectTrigger>
-              <SelectValue placeholder="All Distributors" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Distributors</SelectItem>
-              {distributors.map(distributor => (
-                <SelectItem key={distributor} value={distributor}>
-                  {distributor}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* Availability Filter */}
-          <Select value={selectedAvailability} onValueChange={setSelectedAvailability}>
-            <SelectTrigger>
-              <SelectValue placeholder="Availability" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Availability</SelectItem>
-              {availabilities.map(availability => (
-                <SelectItem key={availability} value={availability}>
-                  {availability}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* In Stock Filter */}
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="in-stock"
-              checked={inStockOnly}
-              onCheckedChange={setInStockOnly}
-            />
-            <Label htmlFor="in-stock" className="text-sm font-medium">
-              In Stock Only
-            </Label>
-          </div>
-        </div>
-      </div>
-
-      {/* Products Grid */}
-      <div className="space-y-4">
-        {filteredProducts.length === 0 ? (
-          <Card>
-            <CardContent className="p-8 text-center">
-              <div className="text-gray-500">
-                {products.length === 0 ? (
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">No products found</h3>
-                    <p className="mb-4">Contact your administrator to add products to the catalog.</p>
-                  </div>
-                ) : (
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">No products match your filters</h3>
-                    <p>Try adjusting your search criteria or filters.</p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          filteredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onRequest={handleRequest}
-            />
-          ))
-        )}
-      </div>
+      <ProductList products={filteredProducts} onRequest={handleRequest} />
 
       {/* Request Dialog */}
       <RequestDialog

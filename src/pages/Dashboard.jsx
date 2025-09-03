@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Package, ShoppingCart, FileText, Truck, MessageSquare, DollarSign } from 'lucide-react'
 import { db } from '@/lib/supabase'
-import { formatCurrency, formatDate } from '@/lib/utils'
+import StatsCards from '@/components/dashboard/StatsCards'
+import SpendHistory from '@/components/dashboard/SpendHistory'
+import MessageCenter from '@/components/dashboard/MessageCenter'
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -67,33 +66,6 @@ export default function Dashboard() {
     }
   }
 
-  const statCards = [
-    {
-      title: 'Products',
-      value: stats.products,
-      icon: Package,
-      description: 'Available products'
-    },
-    {
-      title: 'Orders',
-      value: stats.orders,
-      icon: ShoppingCart,
-      description: 'Total orders'
-    },
-    {
-      title: 'Invoices',
-      value: stats.invoices,
-      icon: FileText,
-      description: 'Generated invoices'
-    },
-    {
-      title: 'Shipments',
-      value: stats.shipments,
-      icon: Truck,
-      description: 'Active shipments'
-    }
-  ]
-
   if (loading) {
     return (
       <div className="space-y-6">
@@ -119,112 +91,16 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statCards.map((stat) => (
-          <Card key={stat.title} className="hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className="h-4 w-4 text-gray-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-              <CardDescription className="text-xs">
-                {stat.description}
-              </CardDescription>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <StatsCards stats={stats} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Spend History */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5" />
-              Spend History
-            </CardTitle>
-            <CardDescription>Your recent spending activity</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                <span className="font-medium">Total Spent</span>
-                <span className="text-lg font-bold text-green-600">
-                  {formatCurrency(stats.totalSpent)}
-                </span>
-              </div>
-              
-              <div className="space-y-3">
-                {spendHistory.length === 0 ? (
-                  <div className="text-center text-gray-500 py-4">
-                    <p>No spending history yet</p>
-                  </div>
-                ) : (
-                  spendHistory.map((item) => (
-                    <div key={item.id} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
-                      <div>
-                        <p className="font-medium text-sm">{item.description}</p>
-                        <p className="text-xs text-gray-500">{formatDate(item.date)}</p>
-                      </div>
-                      <span className="font-medium">{formatCurrency(item.amount)}</span>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <SpendHistory totalSpent={stats.totalSpent} spendHistory={spendHistory} />
+        <MessageCenter unreadCount={stats.messages} recentMessages={recentMessages} />
+      </div>
+    </div>
+  )
+}
 
-        {/* Message Center */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5" />
-              Message Center
-            </CardTitle>
-            <CardDescription>Recent messages and notifications</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Unread Messages</span>
-                <span className="text-lg font-bold text-blue-600">{stats.messages}</span>
-              </div>
-              
-              <div className="space-y-3">
-                {recentMessages.length === 0 ? (
-                  <div className="text-center text-gray-500 py-4">
-                    <p>No new messages</p>
-                  </div>
-                ) : (
-                  recentMessages.map((message) => (
-                    <div key={message.id} className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <p className="font-medium text-sm text-gray-900">{message.subject}</p>
-                          <p className="text-xs text-gray-600 mt-1 line-clamp-2">{message.content}</p>
-                          <p className="text-xs text-gray-500 mt-1">{formatDate(message.created_at)}</p>
-                        </div>
-                        <Button size="sm" variant="outline" className="ml-2">
-                          View
-                        </Button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-              
-              {recentMessages.length > 0 && (
-                <Button variant="outline" className="w-full">
-                  View All Messages
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   )
