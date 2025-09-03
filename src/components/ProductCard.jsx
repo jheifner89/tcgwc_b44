@@ -80,7 +80,7 @@ export default function ProductCard({ product, onRequest, quantity, onQuantityCh
               >
                 {product.availability || 'open'}
               </Badge>
-              {(product.availability === 'pre-order' || product.orders_due_date) && product.orders_due_date && (
+              {product.orders_due_date && (
                 <Badge variant="outline" className="text-xs">
                   Due: {new Date(product.orders_due_date).toLocaleDateString()}
                 </Badge>
@@ -103,8 +103,7 @@ export default function ProductCard({ product, onRequest, quantity, onQuantityCh
               </div>
 
               <div className="flex items-center gap-2">
-                <div className="flex flex-col items-center gap-1">
-                  <label className="text-xs text-gray-500">Qty</label>
+                <div className="flex flex-col items-center">
                   <Input
                     type="number"
                     min="1"
@@ -125,13 +124,17 @@ export default function ProductCard({ product, onRequest, quantity, onQuantityCh
               </div>
             </div>
 
+            {/* Stock notification */}
+            <div className="mt-2 text-center">
+              <span className={`text-xs ${product.in_stock ? 'text-green-600' : 'text-red-600'}`}>
+                Stock: {product.in_stock ? 'In Stock' : 'Out of Stock'}
+              </span>
+            </div>
+
             {/* Additional product info */}
             <div className="mt-3 text-xs text-gray-500 space-y-1">
               {product.release_date && (
                 <div>Release Date: {new Date(product.release_date).toLocaleDateString()}</div>
-              )}
-              {product.orders_due_date && (
-                <div>Orders Due: {new Date(product.orders_due_date).toLocaleDateString()}</div>
               )}
               {product.override_end_date && (
                 <div>Special Price Until: {new Date(product.override_end_date).toLocaleDateString()}</div>
