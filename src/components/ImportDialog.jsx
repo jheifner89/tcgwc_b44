@@ -80,9 +80,18 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
       // Convert date formats from MM/DD/YYYY to YYYY-MM-DD
       if (product.release_date && product.release_date !== '---' && product.release_date.trim() !== '') {
         try {
-          const [month, day, year] = product.release_date.split('/')
-          if (month && day && year) {
-            product.release_date = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+          // Check if date is already in YYYY-MM-DD format
+          if (product.release_date.includes('-') && product.release_date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            // Already in correct format, keep as is
+            product.release_date = product.release_date
+          } else if (product.release_date.includes('/')) {
+            // Convert from MM/DD/YYYY to YYYY-MM-DD
+            const [month, day, year] = product.release_date.split('/')
+            if (month && day && year) {
+              product.release_date = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+            } else {
+              product.release_date = null
+            }
           } else {
             product.release_date = null
           }
@@ -95,9 +104,18 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
       
       if (product.orders_due_date && product.orders_due_date !== '---' && product.orders_due_date.trim() !== '') {
         try {
-          const [month, day, year] = product.orders_due_date.split('/')
-          if (month && day && year) {
-            product.orders_due_date = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+          // Check if date is already in YYYY-MM-DD format
+          if (product.orders_due_date.includes('-') && product.orders_due_date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            // Already in correct format, keep as is
+            product.orders_due_date = product.orders_due_date
+          } else if (product.orders_due_date.includes('/')) {
+            // Convert from MM/DD/YYYY to YYYY-MM-DD
+            const [month, day, year] = product.orders_due_date.split('/')
+            if (month && day && year) {
+              product.orders_due_date = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+            } else {
+              product.orders_due_date = null
+            }
           } else {
             product.orders_due_date = null
           }
@@ -223,7 +241,7 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
               </code>
             </div>
             <div className="mt-2 text-xs text-gray-500">
-              <p>• Dates should be in MM/DD/YYYY format or "---" for empty</p>
+              <p>• Dates should be in YYYY-MM-DD or MM/DD/YYYY format, or "---" for empty</p>
               <p>• in_stock should be "True" or "False"</p>
               <p>• availability should be "open", "pre-order", or "closed"</p>
             </div>
