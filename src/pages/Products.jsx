@@ -4,6 +4,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import ProductFilters from '@/components/ProductFilters'
 import ProductList from '@/components/ProductList'
 import RequestDialog from '@/components/RequestDialog'
+import { useToast } from '@/hooks/use-toast'
+import { formatCurrency } from '@/lib/utils'
 
 export default function Products({ user }) {
   const [products, setProducts] = useState([])
@@ -16,6 +18,8 @@ export default function Products({ user }) {
   const [inStockOnly, setInStockOnly] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [showRequestDialog, setShowRequestDialog] = useState(false)
+  const [quantities, setQuantities] = useState({})
+  const { toast } = useToast()
 
   // Get unique values for filters
   const categories = [...new Set(products.map(p => p.product_line).filter(Boolean))]
@@ -77,7 +81,91 @@ export default function Products({ user }) {
     setFilteredProducts(filtered)
   }
 
-  const handleRequest = (product) => {
+  const handleQuantityChange = (productId, quantity) => {
+    setQuantities(prev => ({ ...prev, [productId]: quantity }))
+  }
+
+  const handleRequest = async (product, quantity) => {
+    try {
+      // Check if there's an existing request for this product
+      const { data: existingRequests, error: fetchError } = await db.getRequests()
+      if (fetchError) throw fetchError
+
+      const existingRequest = existingRequests?.find(request => 
+        request.subject?.includes(product.name) && 
+        request.status !== 'completed' && 
+        request.status !== 'cancelled'
+      )
+
+      if (existingRequest) {
+        // Extract current quantity from existing message
+        const currentQtyMatch = existingRequest.message.match(/Quantity Requested: (\d+)/)
+        const currentQty = currentQtyMatch ? parseInt(currentQtyMatch[1]) : 1
+        const newQty = currentQty + quantity
+
+        // Update existing request with new quantity
+        const updatedMessage = existingRequest.message.replace(
+          /Quantity Requested: \d+/,
+          `Quantity Requested: ${newQty}`
+        )
+
+        const { error: updateError } = await db.updateRequest(existingRequest.id, {
+          message: updatedMessage,
+          updated_at: new Date().toISOString()
+        })
+
+        if (updateError) throw updateError
+
+        toast({
+          title: "Request Updated",
+          description: `Added ${quantity} more to your existing request. Total quantity: ${newQty}`,
+          variant: "success"
+        })
+      } else {
+        // Create new request
+        const displayPrice = product.override_price && 
+          (!product.override_end_date || new Date(product.override_end_date) > new Date()) 
+          ? product.override_price 
+          : (product.wholesale_price || product.price || 0)
+
+        const requestData = {
+          customer_name: user?.email?.split('@')[0] || 'User',
+          customer_email: user?.email || '',
+          subject: `Product Request: ${product.name}`,
+          message: `Product: ${product.name}
+SKU: ${product.sku || 'N/A'}
+Distributor: ${product.distributor || 'N/A'}
+Product Line: ${product.product_line || 'N/A'}
+Price: ${formatCurrency(displayPrice)}
+Quantity Requested: ${quantity}
+Availability: ${product.availability || 'open'}`,
+          priority: 'medium',
+          assigned_to: user?.id
+        }
+
+        const { error: createError } = await db.createRequest(requestData)
+        if (createError) throw createError
+
+        toast({
+          title: "Request Submitted",
+          description: `Your request for ${quantity} ${product.name} has been submitted!`,
+          variant: "success"
+        })
+      }
+
+      // Reset quantity for this product
+      setQuantities(prev => ({ ...prev, [product.id]: 1 }))
+    } catch (error) {
+      console.error('Error creating/updating request:', error)
+      toast({
+        title: "Request Failed",
+        description: "Error submitting request. Please try again.",
+        variant: "destructive"
+      })
+    }
+  }
+
+  const handleRequestOld = (product) => {
     setSelectedProduct(product)
     setShowRequestDialog(true)
   }
@@ -130,7 +218,12 @@ export default function Products({ user }) {
         availabilities={availabilities}
       />
 
-      <ProductList products={filteredProducts} onRequest={handleRequest} />
+      <ProductList 
+        products={filteredProducts} 
+        onRequest={handleRequest}
+        quantities={quantities}
+        onQuantityChange={handleQuantityChange}
+      />
 
       {/* Request Dialog */}
       <RequestDialog

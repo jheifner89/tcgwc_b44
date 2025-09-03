@@ -1,10 +1,11 @@
 import React from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { formatCurrency } from '@/lib/utils'
 
-export default function ProductCard({ product, onRequest }) {
+export default function ProductCard({ product, onRequest, quantity, onQuantityChange }) {
   const getAvailabilityColor = (availability) => {
     switch (availability) {
       case 'open':
@@ -18,22 +19,25 @@ export default function ProductCard({ product, onRequest }) {
     }
   }
 
-  const getStockStatus = (inStock, availability) => {
-    if (availability === 'pre-order') return 'Pre-Order'
-    if (inStock) return 'In Stock'
-    return 'Out of Stock'
-  }
-
-  const getStockColor = (inStock, availability) => {
-    if (availability === 'pre-order') return 'text-blue-600'
-    if (inStock) return 'text-green-600'
-    return 'text-red-600'
-  }
-
   const displayPrice = product.override_price && 
     (!product.override_end_date || new Date(product.override_end_date) > new Date()) 
     ? product.override_price 
     : (product.wholesale_price || product.price || 0)
+
+  // Check if requesting is available
+  const isRequestingAvailable = () => {
+    if (!product.approved) return false
+    if (product.availability === 'closed') return false
+    if (product.availability === 'open') return true
+    if (product.availability === 'pre-order') {
+      // For pre-orders, check if orders_due_date is in the future
+      if (product.orders_due_date) {
+        return new Date(product.orders_due_date) > new Date()
+      }
+      return true
+    }
+    return false
+  }
 
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -76,6 +80,11 @@ export default function ProductCard({ product, onRequest }) {
               >
                 {product.availability || 'open'}
               </Badge>
+              {(product.availability === 'pre-order' || product.orders_due_date) && product.orders_due_date && (
+                <Badge variant="outline" className="text-xs">
+                  Due: {new Date(product.orders_due_date).toLocaleDateString()}
+                </Badge>
+              )}
             </div>
 
             <div className="flex items-center justify-between">
@@ -88,24 +97,28 @@ export default function ProductCard({ product, onRequest }) {
                     </span>
                   )}
                 </div>
-                <div className={`text-sm font-medium ${getStockColor(product.in_stock, product.availability)}`}>
-                  Stock: {getStockStatus(product.in_stock, product.availability)}
-                </div>
                 {product.sku && (
                   <div className="text-xs text-gray-500">SKU: {product.sku}</div>
                 )}
               </div>
 
               <div className="flex items-center gap-2">
-                <div className="text-center">
-                  <div className="text-sm text-gray-500">Qty</div>
-                  <div className="text-lg font-medium">1</div>
+                <div className="flex flex-col items-center gap-1">
+                  <label className="text-xs text-gray-500">Qty</label>
+                  <Input
+                    type="number"
+                    min="1"
+                    value={quantity}
+                    onChange={(e) => onQuantityChange(parseInt(e.target.value) || 1)}
+                    className="w-16 h-8 text-center text-sm"
+                    disabled={!isRequestingAvailable()}
+                  />
                 </div>
                 <Button 
                   size="sm"
-                  onClick={() => onRequest(product)}
+                  onClick={() => onRequest(product, quantity)}
                   className="bg-gray-800 hover:bg-gray-700 text-white"
-                  disabled={!product.approved || (!product.in_stock && product.availability !== 'pre-order')}
+                  disabled={!isRequestingAvailable()}
                 >
                   Request
                 </Button>

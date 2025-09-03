@@ -2,7 +2,7 @@ import React from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import ProductCard from '@/components/ProductCard'
 
-export default function ProductList({ products, onRequest }) {
+export default function ProductList({ products, onRequest, quantities, onQuantityChange }) {
   if (products.length === 0) {
     return (
       <Card>
@@ -23,6 +23,8 @@ export default function ProductList({ products, onRequest }) {
           key={product.id}
           product={product}
           onRequest={onRequest}
+          quantity={quantities[product.id] || 1}
+          onQuantityChange={(qty) => onQuantityChange(product.id, qty)}
         />
       ))}
     </div>
