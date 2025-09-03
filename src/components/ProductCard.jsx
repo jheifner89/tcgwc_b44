@@ -48,7 +48,7 @@ export default function ProductCard({ product, onRequest, quantity, onQuantityCh
             <img
              src={product.image_url || 'https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop'}
               alt={product.name}
-             className="w-25 h-25 object-cover rounded-md border border-gray-300 p-2.5"
+             className="w-22 h-22 object-cover rounded-md border border-gray-300 p-2.5"
               onError={(e) => {
                e.target.src = 'https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop'
               }}
