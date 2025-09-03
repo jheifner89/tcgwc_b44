@@ -67,7 +67,6 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
         
         // Set additional required fields with defaults
         description: '',
-        cost: 0,
         stock_quantity: values[7]?.replace(/"/g, '').toLowerCase() === 'true' ? 1 : 0,
         is_active: true,
         override_price: null,
