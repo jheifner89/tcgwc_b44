@@ -56,7 +56,6 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
         sku: values[1]?.replace(/"/g, '') || '',
         name: values[2]?.replace(/"/g, '') || '',
         wholesale_price: values[3] ? parseFloat(values[3]) : 0,
-        price: values[3] ? parseFloat(values[3]) : 0, // Set price same as wholesale_price
         release_date: values[4]?.replace(/"/g, '') || null,
         orders_due_date: values[5]?.replace(/"/g, '') || null,
         availability: values[6]?.replace(/"/g, '') || 'open',
