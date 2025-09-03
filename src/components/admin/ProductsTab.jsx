@@ -2,7 +2,7 @@ import React from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Upload, Download, RefreshCw, Plus, Edit, Trash2 } from 'lucide-react'
+import { Upload, Download, RefreshCw, Edit, Trash2 } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
 import ProductFilters from '@/components/ProductFilters'
 
@@ -24,7 +24,6 @@ export default function ProductsTab({
   onImport,
   onExport,
   onSync,
-  onAdd,
   onDelete
 }) {
   const getAvailabilityColor = (availability) => {
@@ -55,10 +54,6 @@ export default function ProductsTab({
           <Button variant="outline" onClick={onSync}>
             <RefreshCw className="h-4 w-4 mr-2" />
             Sync Products
-          </Button>
-          <Button onClick={onAdd}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Product
           </Button>
         </div>
       </div>

@@ -30,7 +30,6 @@ export default function AdminDashboard({ user }) {
   // Dialogs
   const [showImportDialog, setShowImportDialog] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
-  const [showAddForm, setShowAddForm] = useState(false)
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false })
   const { toast } = useToast()
 
@@ -179,7 +178,6 @@ export default function AdminDashboard({ user }) {
             onImport={() => setShowImportDialog(true)}
             onExport={handleExportCSV}
             onSync={() => console.log('Sync products')}
-            onAdd={() => setShowAddForm(true)}
             onDelete={handleDeleteProduct}
           />
         </TabsContent>
