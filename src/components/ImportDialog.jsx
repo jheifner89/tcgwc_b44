@@ -15,28 +15,14 @@ import { db } from '@/lib/supabase'
 export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
   const [selectedFile, setSelectedFile] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [previewData, setPreviewData] = useState([])
-  const [showPreview, setShowPreview] = useState(false)
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0]
     if (file && file.type === 'text/csv') {
       setSelectedFile(file)
-      
-      // Parse and preview first 5 rows
-      try {
-        const csvText = await file.text()
-        const parsed = parseCsvData(csvText)
-        setPreviewData(parsed.slice(0, 5))
-        setShowPreview(true)
-      } catch (error) {
-        console.error('Error parsing CSV preview:', error)
-        alert('Error parsing CSV file. Please check the format.')
-      }
     } else {
       alert('Please select a valid CSV file')
       e.target.value = ''
-      setShowPreview(false)
     }
   }
 
@@ -187,15 +173,13 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
 
   const resetImport = () => {
     setSelectedFile(null)
-    setPreviewData([])
-    setShowPreview(false)
     const fileInput = document.getElementById('csv-file')
     if (fileInput) fileInput.value = ''
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Import Products from CSV</DialogTitle>
           <DialogDescription>
@@ -233,66 +217,12 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
             </div>
           </div>
 
-          {/* Preview Data */}
-          {showPreview && previewData.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="font-medium text-sm">Preview (first 5 rows):</h4>
-              <div className="border rounded-lg overflow-hidden bg-gray-50">
-                <div className="max-h-60 overflow-y-auto">
-                  <div className="space-y-2 p-3">
-                    {previewData.map((product, index) => (
-                      <div key={index} className="bg-white p-3 rounded border">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
-                          <div>
-                            <span className="font-medium text-gray-600">Product Line:</span>
-                            <div className="text-gray-900">{product.product_line}</div>
-                          </div>
-                          <div>
-                            <span className="font-medium text-gray-600">SKU:</span>
-                            <div className="text-gray-900">{product.sku}</div>
-                          </div>
-                          <div>
-                            <span className="font-medium text-gray-600">Name:</span>
-                            <div className="text-gray-900 truncate" title={product.name}>{product.name}</div>
-                          </div>
-                          <div>
-                            <span className="font-medium text-gray-600">Price:</span>
-                            <div className="text-gray-900">${product.wholesale_price}</div>
-                          </div>
-                          <div>
-                            <span className="font-medium text-gray-600">Availability:</span>
-                            <div className="text-gray-900">{product.availability}</div>
-                          </div>
-                          <div>
-                            <span className="font-medium text-gray-600">Stock:</span>
-                            <div className="text-gray-900">{product.in_stock ? 'Yes' : 'No'}</div>
-                          </div>
-                          <div className="sm:col-span-2 lg:col-span-3">
-                            <span className="font-medium text-gray-600">Distributor:</span>
-                            <div className="text-gray-900">{product.distributor}</div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="text-sm text-gray-600">
-                Found {previewData.length > 0 ? `${previewData.length}+ products` : 'no valid products'} in the CSV file.
-              </div>
-            </div>
-          )}
         </div>
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          {showPreview && (
-            <Button type="button" variant="outline" onClick={resetImport}>
-              Choose Different File
-            </Button>
-          )}
           <Button onClick={handleImport} disabled={loading || !selectedFile}>
             {loading ? 'Importing...' : 'Import Products'}
           </Button>
