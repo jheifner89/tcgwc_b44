@@ -122,13 +122,13 @@ export default function ProductCard({ product, onRequest, quantity, onQuantityCh
                   Request
                 </Button>
               </div>
-            </div>
 
-            {/* Stock notification */}
-            <div className="mt-2 text-center">
-              <span className={`text-xs ${product.in_stock ? 'text-green-600' : 'text-red-600'}`}>
-                Stock: {product.in_stock ? 'In Stock' : 'Out of Stock'}
-              </span>
+              {/* Stock notification directly under inputs */}
+              <div className="text-center mt-1">
+                <span className={`text-xs ${product.in_stock ? 'text-green-600' : 'text-red-600'}`}>
+                  Stock: {product.in_stock ? 'In Stock' : 'Out of Stock'}
+                </span>
+              </div>
             </div>
 
             {/* Additional product info */}
