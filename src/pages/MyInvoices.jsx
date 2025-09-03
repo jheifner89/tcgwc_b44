@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search, Download, Eye } from 'lucide-react'
 import { db } from '@/lib/supabase'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import { useToast } from '@/hooks/use-toast'
 
 export default function MyInvoices({ user }) {
   const [invoices, setInvoices] = useState([])
@@ -14,6 +15,7 @@ export default function MyInvoices({ user }) {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const { toast } = useToast()
 
   useEffect(() => {
     loadInvoices()
@@ -73,7 +75,11 @@ export default function MyInvoices({ user }) {
   const handleDownloadInvoice = (invoice) => {
     // TODO: Implement PDF download functionality
     console.log('Download invoice:', invoice.id)
-    alert('PDF download functionality needs to be implemented')
+    toast({
+      title: "Feature Coming Soon",
+      description: "PDF download functionality needs to be implemented",
+      variant: "warning"
+    })
   }
 
   if (loading) {

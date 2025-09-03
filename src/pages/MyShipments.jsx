@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search, ExternalLink, Package } from 'lucide-react'
 import { db } from '@/lib/supabase'
 import { formatDate } from '@/lib/utils'
+import { useToast } from '@/hooks/use-toast'
 
 export default function MyShipments({ user }) {
   const [shipments, setShipments] = useState([])
@@ -15,6 +16,7 @@ export default function MyShipments({ user }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [carrierFilter, setCarrierFilter] = useState('all')
+  const { toast } = useToast()
 
   useEffect(() => {
     loadShipments()
@@ -78,7 +80,11 @@ export default function MyShipments({ user }) {
   const handleTrackExternal = (trackingNumber, carrier) => {
     // TODO: Implement external tracking links
     console.log('Track externally:', trackingNumber, carrier)
-    alert('External tracking functionality needs to be implemented')
+    toast({
+      title: "Feature Coming Soon",
+      description: "External tracking functionality needs to be implemented",
+      variant: "warning"
+    })
   }
 
   const carriers = [...new Set(shipments.map(s => s.carrier).filter(Boolean))]

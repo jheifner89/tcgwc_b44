@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search, Eye, Truck } from 'lucide-react'
 import { db } from '@/lib/supabase'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import { useToast } from '@/hooks/use-toast'
 
 export default function MyOrders({ user }) {
   const [orders, setOrders] = useState([])
@@ -15,6 +16,7 @@ export default function MyOrders({ user }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [paymentFilter, setPaymentFilter] = useState('all')
+  const { toast } = useToast()
 
   useEffect(() => {
     loadOrders()
@@ -95,7 +97,11 @@ export default function MyOrders({ user }) {
   const handleTrackShipment = (order) => {
     // TODO: Implement shipment tracking
     console.log('Track shipment for order:', order.id)
-    alert('Shipment tracking functionality needs to be implemented')
+    toast({
+      title: "Feature Coming Soon",
+      description: "Shipment tracking functionality needs to be implemented",
+      variant: "warning"
+    })
   }
 
   if (loading) {

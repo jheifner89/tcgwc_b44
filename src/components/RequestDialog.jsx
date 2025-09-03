@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { db } from '@/lib/supabase'
 import { formatCurrency } from '@/lib/utils'
+import { useToast } from '@/hooks/use-toast'
 
 export default function RequestDialog({ product, open, onOpenChange, user }) {
   const [formData, setFormData] = useState({
@@ -25,6 +26,7 @@ export default function RequestDialog({ product, open, onOpenChange, user }) {
     quantity: 1
   })
   const [loading, setLoading] = useState(false)
+  const { toast } = useToast()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -66,10 +68,18 @@ Additional Message: ${formData.message}`,
       onOpenChange(false)
       
       // Show success message
-      alert('Request submitted successfully!')
+      toast({
+        title: "Request Submitted",
+        description: "Your product request has been submitted successfully!",
+        variant: "success"
+      })
     } catch (error) {
       console.error('Error creating request:', error)
-      alert('Error submitting request. Please try again.')
+      toast({
+        title: "Error",
+        description: "Error submitting request. Please try again.",
+        variant: "destructive"
+      })
     } finally {
       setLoading(false)
     }

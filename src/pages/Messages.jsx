@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search, Eye, Reply, Archive } from 'lucide-react'
 import { db } from '@/lib/supabase'
 import { formatDate } from '@/lib/utils'
+import { useToast } from '@/hooks/use-toast'
 
 export default function Messages({ user }) {
   const [messages, setMessages] = useState([])
@@ -15,6 +16,7 @@ export default function Messages({ user }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
   const [readFilter, setReadFilter] = useState('all')
+  const { toast } = useToast()
 
   useEffect(() => {
     loadMessages()
@@ -89,13 +91,21 @@ export default function Messages({ user }) {
   const handleReply = (message) => {
     // TODO: Implement reply functionality
     console.log('Reply to message:', message.id)
-    alert('Reply functionality needs to be implemented')
+    toast({
+      title: "Feature Coming Soon",
+      description: "Reply functionality needs to be implemented",
+      variant: "warning"
+    })
   }
 
   const handleArchive = (message) => {
     // TODO: Implement archive functionality
     console.log('Archive message:', message.id)
-    alert('Archive functionality needs to be implemented')
+    toast({
+      title: "Feature Coming Soon",
+      description: "Archive functionality needs to be implemented",
+      variant: "warning"
+    })
   }
 
   if (loading) {

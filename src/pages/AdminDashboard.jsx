@@ -8,6 +8,8 @@ import UsersTab from '@/components/admin/UsersTab'
 import RequestsTab from '@/components/admin/RequestsTab'
 import InvoicesTab from '@/components/admin/InvoicesTab'
 import OrdersTab from '@/components/admin/OrdersTab'
+import ConfirmationDialog from '@/components/ConfirmationDialog'
+import { useToast } from '@/hooks/use-toast'
 
 export default function AdminDashboard({ user }) {
   const [products, setProducts] = useState([])
@@ -29,6 +31,8 @@ export default function AdminDashboard({ user }) {
   const [showImportDialog, setShowImportDialog] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
   const [showAddForm, setShowAddForm] = useState(false)
+  const [confirmDialog, setConfirmDialog] = useState({ isOpen: false })
+  const { toast } = useToast()
 
   // Get unique values for filters
   const categories = [...new Set(products.map(p => p.product_line).filter(Boolean))]
@@ -79,21 +83,42 @@ export default function AdminDashboard({ user }) {
       document.body.removeChild(link)
     } catch (error) {
       console.error('Error exporting CSV:', error)
-      alert('Error exporting products to CSV')
+      toast({
+        title: "Export Failed",
+        description: "Error exporting products to CSV",
+        variant: "destructive"
+      })
     }
   }
 
   const handleDeleteProduct = async (productId) => {
-    if (confirm('Are you sure you want to delete this product?')) {
-      try {
-        const { error } = await db.deleteProduct(productId)
-        if (error) throw error
-        loadData()
-      } catch (error) {
-        console.error('Error deleting product:', error)
-        alert('Error deleting product')
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Delete Product',
+      description: 'Are you sure you want to delete this product? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'destructive',
+      onConfirm: async () => {
+        try {
+          const { error } = await db.deleteProduct(productId)
+          if (error) throw error
+          loadData()
+          toast({
+            title: "Product Deleted",
+            description: "Product has been successfully deleted",
+            variant: "success"
+          })
+        } catch (error) {
+          console.error('Error deleting product:', error)
+          toast({
+            title: "Delete Failed",
+            description: "Error deleting product",
+            variant: "destructive"
+          })
+        }
       }
-    }
+    })
   }
 
   if (loading) {
@@ -185,6 +210,19 @@ export default function AdminDashboard({ user }) {
         open={showImportDialog}
         onOpenChange={setShowImportDialog}
         onImportComplete={handleImportComplete}
+      />
+
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={confirmDialog.isOpen}
+        onOpenChange={(open) => setConfirmDialog(prev => ({ ...prev, isOpen: open }))}
+        title={confirmDialog.title}
+        description={confirmDialog.description}
+        confirmText={confirmDialog.confirmText}
+        cancelText={confirmDialog.cancelText}
+        variant={confirmDialog.variant}
+        onConfirm={confirmDialog.onConfirm}
+        onCancel={confirmDialog.onCancel}
       />
     </div>
   )

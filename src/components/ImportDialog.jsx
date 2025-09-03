@@ -11,17 +11,23 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { db } from '@/lib/supabase'
+import { useToast } from '@/hooks/use-toast'
 
 export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
   const [selectedFile, setSelectedFile] = useState(null)
   const [loading, setLoading] = useState(false)
+  const { toast } = useToast()
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0]
     if (file && file.type === 'text/csv') {
       setSelectedFile(file)
     } else {
-      alert('Please select a valid CSV file')
+      toast({
+        title: "Invalid File",
+        description: "Please select a valid CSV file",
+        variant: "destructive"
+      })
       e.target.value = ''
     }
   }
@@ -151,13 +157,25 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
       onImportComplete()
       
       if (totalErrors > 0) {
-        alert(`Import completed with some issues:\n- Successfully imported: ${totalImported} products\n- Failed to import: ${totalErrors} products\n\nPlease check the console for detailed error information.`)
+        toast({
+          title: "Import Completed with Issues",
+          description: `Successfully imported: ${totalImported} products. Failed to import: ${totalErrors} products. Check console for details.`,
+          variant: "warning"
+        })
       } else {
-        alert(`Successfully imported ${totalImported} products!`)
+        toast({
+          title: "Import Successful",
+          description: `Successfully imported ${totalImported} products!`,
+          variant: "success"
+        })
       }
     } catch (error) {
       console.error('Error importing products:', error)
-      alert(`Error importing products: ${error.message}\n\nPlease check your CSV format matches the expected structure:\nproduct_line,sku,name,wholesale_price,release_date,orders_due_date,availability,in_stock,image_url,product_url,distributor`)
+      toast({
+        title: "Import Failed",
+        description: `Error importing products: ${error.message}. Please check your CSV format.`,
+        variant: "destructive"
+      })
     } finally {
       setLoading(false)
     }

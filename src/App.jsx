@@ -13,6 +13,7 @@ import MyOrders from '@/pages/MyOrders'
 import MyShipments from '@/pages/MyShipments'
 import Messages from '@/pages/Messages'
 import Settings from '@/pages/Settings'
+import { Toaster } from '@/components/ui/toaster'
 
 function App() {
   const [user, setUser] = useState(null)
@@ -62,6 +63,7 @@ function App() {
           <Route path="/settings" element={<Settings user={user} />} />
         </Routes>
       </Layout>
+      <Toaster />
     </Router>
   )
 }

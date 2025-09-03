@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Save, User, Bell, Shield, CreditCard } from 'lucide-react'
 import { db } from '@/lib/supabase'
+import { useToast } from '@/hooks/use-toast'
 
 export default function Settings({ user }) {
   const [settings, setSettings] = useState({})
@@ -21,6 +22,7 @@ export default function Settings({ user }) {
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const { toast } = useToast()
 
   useEffect(() => {
     loadSettings()
@@ -57,10 +59,18 @@ export default function Settings({ user }) {
       if (error) throw error
       
       setSettings(prev => ({ ...prev, [key]: value }))
-      alert('Setting saved successfully!')
+      toast({
+        title: "Setting Saved",
+        description: "Your setting has been saved successfully!",
+        variant: "success"
+      })
     } catch (error) {
       console.error('Error saving setting:', error)
-      alert('Error saving setting')
+      toast({
+        title: "Save Failed",
+        description: "Error saving setting",
+        variant: "destructive"
+      })
     } finally {
       setSaving(false)
     }
@@ -71,10 +81,18 @@ export default function Settings({ user }) {
     try {
       // TODO: Implement user profile update
       console.log('Save user profile:', userProfile)
-      alert('Profile update functionality needs to be implemented')
+      toast({
+        title: "Feature Coming Soon",
+        description: "Profile update functionality needs to be implemented",
+        variant: "warning"
+      })
     } catch (error) {
       console.error('Error saving profile:', error)
-      alert('Error saving profile')
+      toast({
+        title: "Save Failed",
+        description: "Error saving profile",
+        variant: "destructive"
+      })
     } finally {
       setSaving(false)
     }
