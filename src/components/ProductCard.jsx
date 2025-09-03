@@ -64,9 +64,6 @@ export default function ProductCard({ product, onRequest, quantity, onQuantityCh
             {/* Product Line and Distributor */}
             <div className="flex flex-wrap gap-2 mb-2">
               <Badge variant="secondary" className="text-xs">
-                {product.product_line || 'General'}
-              </Badge>
-              <Badge variant="secondary" className="text-xs">
                 {product.distributor || 'Unknown'}
               </Badge>
               <Badge 
@@ -74,7 +71,7 @@ export default function ProductCard({ product, onRequest, quantity, onQuantityCh
               >
                 {product.availability || 'open'}
               </Badge>
-              {product.orders_due_date && (
+              {product.availability !== 'open' && product.orders_due_date && (
                 <Badge variant="outline" className="text-xs">
                   Due: {new Date(product.orders_due_date).toLocaleDateString()}
                 </Badge>
