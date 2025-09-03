@@ -26,6 +26,13 @@ export const db = {
   createProduct: (product) => supabase.from('products').insert(product),
   updateProduct: (id, updates) => supabase.from('products').update(updates).eq('id', id),
   deleteProduct: (id) => supabase.from('products').update({ is_active: false }).eq('id', id),
+  
+  // Bulk product operations
+  bulkCreateProducts: (products) => supabase.from('products').insert(products),
+  bulkUpsertProducts: (products) => supabase.from('products').upsert(products, { 
+    onConflict: 'sku',
+    ignoreDuplicates: false 
+  }),
 
   // Orders
   getOrders: () => supabase.from('orders').select('*').order('created_at', { ascending: false }),

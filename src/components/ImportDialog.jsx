@@ -15,26 +15,41 @@ import { db } from '@/lib/supabase'
 export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
   const [selectedFile, setSelectedFile] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [previewData, setPreviewData] = useState([])
+  const [showPreview, setShowPreview] = useState(false)
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0]
     if (file && file.type === 'text/csv') {
       setSelectedFile(file)
+      
+      // Parse and preview first 5 rows
+      try {
+        const csvText = await file.text()
+        const parsed = parseCsvData(csvText)
+        setPreviewData(parsed.slice(0, 5))
+        setShowPreview(true)
+      } catch (error) {
+        console.error('Error parsing CSV preview:', error)
+        alert('Error parsing CSV file. Please check the format.')
+      }
     } else {
       alert('Please select a valid CSV file')
       e.target.value = ''
+      setShowPreview(false)
     }
   }
 
   const parseCsvData = (csvText) => {
     const lines = csvText.trim().split('\n')
-    const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim())
     
+    // Skip header row and process data rows
     return lines.slice(1).map(line => {
       const values = []
       let current = ''
       let inQuotes = false
       
+      // Parse CSV with proper quote handling
       for (let i = 0; i < line.length; i++) {
         const char = line[i]
         if (char === '"') {
@@ -48,67 +63,67 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
       }
       values.push(current.trim())
       
-      const product = {}
-      headers.forEach((header, index) => {
-        const value = values[index]?.replace(/"/g, '') || ''
+      // Map CSV columns to product object
+      // Expected format: product_line,sku,name,wholesale_price,release_date,orders_due_date,availability,in_stock,image_url,product_url,distributor
+      const product = {
+        product_line: values[0]?.replace(/"/g, '') || '',
+        sku: values[1]?.replace(/"/g, '') || '',
+        name: values[2]?.replace(/"/g, '') || '',
+        wholesale_price: values[3] ? parseFloat(values[3]) : 0,
+        price: values[3] ? parseFloat(values[3]) : 0, // Set price same as wholesale_price
+        release_date: values[4]?.replace(/"/g, '') || null,
+        orders_due_date: values[5]?.replace(/"/g, '') || null,
+        availability: values[6]?.replace(/"/g, '') || 'open',
+        in_stock: values[7]?.replace(/"/g, '').toLowerCase() === 'true',
+        image_url: values[8]?.replace(/"/g, '') || null,
+        product_url: values[9]?.replace(/"/g, '') || null,
+        distributor: values[10]?.replace(/"/g, '') || '',
         
-        switch (header) {
-          case 'sku':
-            product.sku = value
-            break
-          case 'name':
-            product.name = value
-            break
-          case 'distributor':
-            product.distributor = value
-            break
-          case 'product_line':
-            product.product_line = value
-            break
-          case 'wholesale_price':
-            product.wholesale_price = value ? parseFloat(value) : 0
-            product.price = value ? parseFloat(value) : 0
-            break
-          case 'override_price':
-            product.override_price = value ? parseFloat(value) : null
-            break
-          case 'override_end_date':
-            product.override_end_date = value || null
-            break
-          case 'orders_due_date':
-            product.orders_due_date = value || null
-            break
-          case 'release_date':
-            product.release_date = value || null
-            break
-          case 'availability':
-            product.availability = value || 'open'
-            break
-          case 'in_stock':
-            product.in_stock = value === 'true' || value === '1'
-            break
-          case 'image_url':
-            product.image_url = value
-            break
-          case 'product_url':
-            product.product_url = value
-            break
-          case 'approved':
-            product.approved = value === 'true' || value === '1'
-            break
-          case 'is_sample':
-            product.is_sample = value === 'true' || value === '1'
-            break
-        }
-      })
+        // Set additional required fields with defaults
+        category: values[0]?.replace(/"/g, '') || '', // Use product_line as category
+        description: '',
+        cost: 0,
+        stock_quantity: values[7]?.replace(/"/g, '').toLowerCase() === 'true' ? 1 : 0,
+        is_active: true,
+        override_price: null,
+        override_end_date: null,
+        approved: true,
+        is_sample: false
+      }
       
-      // Set defaults
-      product.category = product.product_line || ''
-      product.stock_quantity = product.in_stock ? 1 : 0
-      product.is_active = true
+      // Convert date formats from MM/DD/YYYY to YYYY-MM-DD
+      if (product.release_date && product.release_date !== '---') {
+        try {
+          const [month, day, year] = product.release_date.split('/')
+          if (month && day && year) {
+            product.release_date = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+          } else {
+            product.release_date = null
+          }
+        } catch {
+          product.release_date = null
+        }
+      } else {
+        product.release_date = null
+      }
+      
+      if (product.orders_due_date && product.orders_due_date !== '---') {
+        try {
+          const [month, day, year] = product.orders_due_date.split('/')
+          if (month && day && year) {
+            product.orders_due_date = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+          } else {
+            product.orders_due_date = null
+          }
+        } catch {
+          product.orders_due_date = null
+        }
+      } else {
+        product.orders_due_date = null
+      }
       
       return product
-    })
+    }).filter(product => product.sku && product.name) // Only include products with SKU and name
   }
 
   const handleImport = async () => {
@@ -119,37 +134,72 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
       const csvText = await selectedFile.text()
       const products = parseCsvData(csvText)
       
-      // Import products in batches
-      const batchSize = 50
-      for (let i = 0; i < products.length; i += batchSize) {
-        const batch = products.slice(i, i + batchSize)
-        const { error } = await db.createProduct(batch)
-        if (error) throw error
+      if (products.length === 0) {
+        throw new Error('No valid products found in CSV file')
       }
       
+      // Import products in batches to avoid timeout
+      const batchSize = 50
+      let totalImported = 0
+      let totalErrors = 0
+      
+      for (let i = 0; i < products.length; i += batchSize) {
+        const batch = products.slice(i, i + batchSize)
+        
+        try {
+          const { data, error } = await db.bulkUpsertProducts(batch)
+          if (error) {
+            console.error('Batch error:', error)
+            totalErrors += batch.length
+          } else {
+            totalImported += batch.length
+          }
+        } catch (batchError) {
+          console.error('Batch processing error:', batchError)
+          totalErrors += batch.length
+        }
+      }
+      
+      // Reset form state
       setSelectedFile(null)
+      setPreviewData([])
+      setShowPreview(false)
+      
       // Reset file input
       const fileInput = document.getElementById('csv-file')
       if (fileInput) fileInput.value = ''
       
       onOpenChange(false)
       onImportComplete()
-      alert(`Successfully imported ${products.length} products!`)
+      
+      if (totalErrors > 0) {
+        alert(`Import completed with some issues:\n- Successfully imported: ${totalImported} products\n- Failed to import: ${totalErrors} products\n\nPlease check the console for detailed error information.`)
+      } else {
+        alert(`Successfully imported ${totalImported} products!`)
+      }
     } catch (error) {
       console.error('Error importing products:', error)
-      alert('Error importing products. Please check your CSV format.')
+      alert(`Error importing products: ${error.message}\n\nPlease check your CSV format matches the expected structure:\nproduct_line,sku,name,wholesale_price,release_date,orders_due_date,availability,in_stock,image_url,product_url,distributor`)
     } finally {
       setLoading(false)
     }
   }
 
+  const resetImport = () => {
+    setSelectedFile(null)
+    setPreviewData([])
+    setShowPreview(false)
+    const fileInput = document.getElementById('csv-file')
+    if (fileInput) fileInput.value = ''
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[800px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Import Products from CSV</DialogTitle>
           <DialogDescription>
-            Upload a CSV file with your product data. Expected columns: sku, name, distributor, product_line, wholesale_price, availability, in_stock, image_url, etc.
+            Upload a CSV file with your product data. Expected format: product_line,sku,name,wholesale_price,release_date,orders_due_date,availability,in_stock,image_url,product_url,distributor
           </DialogDescription>
         </DialogHeader>
         
@@ -169,12 +219,70 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
               </div>
             )}
           </div>
+
+          {/* CSV Format Example */}
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h4 className="font-medium text-sm mb-2">Expected CSV Format:</h4>
+            <code className="text-xs text-gray-600 block">
+              product_line,sku,name,wholesale_price,release_date,orders_due_date,availability,in_stock,image_url,product_url,distributor
+            </code>
+            <div className="mt-2 text-xs text-gray-500">
+              <p>• Dates should be in MM/DD/YYYY format or "---" for empty</p>
+              <p>• in_stock should be "True" or "False"</p>
+              <p>• availability should be "open", "pre-order", or "closed"</p>
+            </div>
+          </div>
+
+          {/* Preview Data */}
+          {showPreview && previewData.length > 0 && (
+            <div className="space-y-2">
+              <h4 className="font-medium text-sm">Preview (first 5 rows):</h4>
+              <div className="border rounded-lg overflow-hidden">
+                <div className="overflow-x-auto max-h-60">
+                  <table className="w-full text-xs">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="p-2 text-left">Product Line</th>
+                        <th className="p-2 text-left">SKU</th>
+                        <th className="p-2 text-left">Name</th>
+                        <th className="p-2 text-left">Price</th>
+                        <th className="p-2 text-left">Availability</th>
+                        <th className="p-2 text-left">Stock</th>
+                        <th className="p-2 text-left">Distributor</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {previewData.map((product, index) => (
+                        <tr key={index} className="border-t">
+                          <td className="p-2">{product.product_line}</td>
+                          <td className="p-2">{product.sku}</td>
+                          <td className="p-2 max-w-xs truncate">{product.name}</td>
+                          <td className="p-2">${product.wholesale_price}</td>
+                          <td className="p-2">{product.availability}</td>
+                          <td className="p-2">{product.in_stock ? 'Yes' : 'No'}</td>
+                          <td className="p-2">{product.distributor}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div className="text-sm text-gray-600">
+                Found {previewData.length > 0 ? `${previewData.length}+ products` : 'no valid products'} in the CSV file.
+              </div>
+            </div>
+          )}
         </div>
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
+          {showPreview && (
+            <Button type="button" variant="outline" onClick={resetImport}>
+              Choose Different File
+            </Button>
+          )}
           <Button onClick={handleImport} disabled={loading || !selectedFile}>
             {loading ? 'Importing...' : 'Import Products'}
           </Button>

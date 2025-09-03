@@ -5,8 +5,9 @@ This document tracks functionality that cannot be recreated from the frontend co
 ## 🔴 CRITICAL UNKNOWNS - Backend API Structure
 
 ### Product Management
+- ✅ **CSV export format** - COMPLETED: Exports in exact format provided
+- ✅ **CSV import functionality** - COMPLETED: Parses and imports CSV with proper data mapping
 - **Product sync functionality** - What external API does "Sync Products" connect to?
-- **CSV export format** - What columns and data structure should be exported?
 - **Product approval workflow** - How does the approval process work?
 - **Pricing logic** - How are wholesale vs override prices calculated and applied?
 - **Stock management** - How is inventory tracked and updated?
