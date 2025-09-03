@@ -71,7 +71,6 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
         override_price: null,
         override_end_date: null,
         approved: true,
-        is_sample: false
       }
       
       // Convert date formats from MM/DD/YYYY to YYYY-MM-DD
