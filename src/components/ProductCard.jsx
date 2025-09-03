@@ -46,11 +46,11 @@ export default function ProductCard({ product, onRequest, quantity, onQuantityCh
           {/* Product Image */}
           <div className="flex-shrink-0">
             <img
-             src={product.image_url || 'https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop'}
+             src={product.image_url || 'https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg?auto=compress&cs=tinysrgb&w=96&h=96&fit=crop'}
               alt={product.name}
-             className="w-20 h-20 object-cover rounded-md border border-gray-300 p-2"
+             className="w-24 h-24 object-cover rounded-md border border-gray-300 p-2"
               onError={(e) => {
-               e.target.src = 'https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg?auto=compress&cs=tinysrgb&w=70&h=70&fit=crop'
+               e.target.src = 'https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg?auto=compress&cs=tinysrgb&w=96&h=96&fit=crop'
               }}
             />
           </div>
