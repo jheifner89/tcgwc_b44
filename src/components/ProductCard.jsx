@@ -67,7 +67,7 @@ export default function ProductCard({ product, onRequest, quantity, onQuantityCh
                 {product.distributor || 'Unknown'}
               </Badge>
               <Badge 
-                className={`text-xs ${getAvailabilityColor(product.availability)}`}
+                className={`text-xs ${getAvailabilityColor(product.availability)} hover:bg-current`}
               >
                 {product.availability || 'open'}
               </Badge>
