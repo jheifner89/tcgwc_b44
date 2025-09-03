@@ -76,6 +76,11 @@ export default function ProductCard({ product, onRequest, quantity, onQuantityCh
                   Due: {new Date(product.orders_due_date).toLocaleDateString()}
                 </Badge>
               )}
+              {product.availability !== 'open' && product.orders_due_date && (
+                <Badge variant="outline" className="text-xs hover:bg-current">
+                  Orders Due: {new Date(product.orders_due_date).toLocaleDateString()}
+                </Badge>
+              )}
               {product.is_sample && (
                 <Badge variant="secondary" className="text-xs hover:bg-current">
                   Sample
