@@ -40,7 +40,7 @@ export default function ProductCard({ product, onRequest, quantity, onQuantityCh
   }
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card>
       <CardContent className="p-4">
         <div className="flex items-center gap-4">
           {/* Product Image */}
