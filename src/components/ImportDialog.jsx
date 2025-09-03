@@ -195,7 +195,7 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[800px] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Import Products from CSV</DialogTitle>
           <DialogDescription>
@@ -223,7 +223,7 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
           {/* CSV Format Example */}
           <div className="bg-gray-50 p-4 rounded-lg">
             <h4 className="font-medium text-sm mb-2">Expected CSV Format:</h4>
-            <code className="text-xs text-gray-600 block">
+            <code className="text-xs text-gray-600 block break-all">
               product_line,sku,name,wholesale_price,release_date,orders_due_date,availability,in_stock,image_url,product_url,distributor
             </code>
             <div className="mt-2 text-xs text-gray-500">
@@ -237,34 +237,44 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
           {showPreview && previewData.length > 0 && (
             <div className="space-y-2">
               <h4 className="font-medium text-sm">Preview (first 5 rows):</h4>
-              <div className="border rounded-lg overflow-hidden">
-                <div className="overflow-x-auto max-h-60">
-                  <table className="w-full text-xs">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="p-2 text-left">Product Line</th>
-                        <th className="p-2 text-left">SKU</th>
-                        <th className="p-2 text-left">Name</th>
-                        <th className="p-2 text-left">Price</th>
-                        <th className="p-2 text-left">Availability</th>
-                        <th className="p-2 text-left">Stock</th>
-                        <th className="p-2 text-left">Distributor</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {previewData.map((product, index) => (
-                        <tr key={index} className="border-t">
-                          <td className="p-2">{product.product_line}</td>
-                          <td className="p-2">{product.sku}</td>
-                          <td className="p-2 max-w-xs truncate">{product.name}</td>
-                          <td className="p-2">${product.wholesale_price}</td>
-                          <td className="p-2">{product.availability}</td>
-                          <td className="p-2">{product.in_stock ? 'Yes' : 'No'}</td>
-                          <td className="p-2">{product.distributor}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              <div className="border rounded-lg overflow-hidden bg-gray-50">
+                <div className="max-h-60 overflow-y-auto">
+                  <div className="space-y-2 p-3">
+                    {previewData.map((product, index) => (
+                      <div key={index} className="bg-white p-3 rounded border">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
+                          <div>
+                            <span className="font-medium text-gray-600">Product Line:</span>
+                            <div className="text-gray-900">{product.product_line}</div>
+                          </div>
+                          <div>
+                            <span className="font-medium text-gray-600">SKU:</span>
+                            <div className="text-gray-900">{product.sku}</div>
+                          </div>
+                          <div>
+                            <span className="font-medium text-gray-600">Name:</span>
+                            <div className="text-gray-900 truncate" title={product.name}>{product.name}</div>
+                          </div>
+                          <div>
+                            <span className="font-medium text-gray-600">Price:</span>
+                            <div className="text-gray-900">${product.wholesale_price}</div>
+                          </div>
+                          <div>
+                            <span className="font-medium text-gray-600">Availability:</span>
+                            <div className="text-gray-900">{product.availability}</div>
+                          </div>
+                          <div>
+                            <span className="font-medium text-gray-600">Stock:</span>
+                            <div className="text-gray-900">{product.in_stock ? 'Yes' : 'No'}</div>
+                          </div>
+                          <div className="sm:col-span-2 lg:col-span-3">
+                            <span className="font-medium text-gray-600">Distributor:</span>
+                            <div className="text-gray-900">{product.distributor}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
               <div className="text-sm text-gray-600">
