@@ -50,7 +50,7 @@ export default function ProductsTab({
           </Button>
           <Button variant="outline" onClick={onExport}>
             <Download className="h-4 w-4 mr-2" />
-            Export Products CSV
+            Export CSV
           </Button>
           <Button variant="outline" onClick={onSync}>
             <RefreshCw className="h-4 w-4 mr-2" />
