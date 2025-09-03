@@ -104,4 +104,62 @@ export const db = {
   getSettings: () => supabase.from('settings').select('*'),
   getSetting: (key) => supabase.from('settings').select('*').eq('key', key).single(),
   updateSetting: (key, value) => supabase.from('settings').upsert({ key, value }),
+
+  // CSV Export
+  exportProductsCSV: async () => {
+    const { data: products, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('is_active', true)
+      .order('product_line', { ascending: true })
+      .order('name', { ascending: true })
+    
+    if (error) throw error
+    
+    // Convert to CSV format matching the provided structure
+    const csvHeaders = [
+      'product_line',
+      'sku', 
+      'name',
+      'wholesale_price',
+      'release_date',
+      'orders_due_date',
+      'availability',
+      'in_stock',
+      'image_url',
+      'product_url',
+      'distributor'
+    ]
+    
+    const csvRows = products.map(product => [
+      product.product_line || '',
+      product.sku || '',
+      product.name || '',
+      product.wholesale_price || product.price || 0,
+      product.release_date || '',
+      product.orders_due_date || '',
+      product.availability || 'open',
+      product.in_stock ? 'True' : 'False',
+      product.image_url || '',
+      product.product_url || '',
+      product.distributor || ''
+    ])
+    
+    // Create CSV content
+    const csvContent = [
+      csvHeaders.join(','),
+      ...csvRows.map(row => 
+        row.map(field => {
+          // Escape fields that contain commas or quotes
+          const stringField = String(field)
+          if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n')) {
+            return `"${stringField.replace(/"/g, '""')}"`
+          }
+          return stringField
+        }).join(',')
+      )
+    ].join('\n')
+    
+    return csvContent
+  }
 }

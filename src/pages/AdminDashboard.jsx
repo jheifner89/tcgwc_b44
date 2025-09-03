@@ -67,6 +67,26 @@ export default function AdminDashboard({ user }) {
     loadData()
   }
 
+  const handleExportCSV = async () => {
+    try {
+      const csvContent = await db.exportProductsCSV()
+      
+      // Create and download the file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+      const link = document.createElement('a')
+      const url = URL.createObjectURL(blob)
+      link.setAttribute('href', url)
+      link.setAttribute('download', `products_export_${new Date().toISOString().split('T')[0]}.csv`)
+      link.style.visibility = 'hidden'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    } catch (error) {
+      console.error('Error exporting CSV:', error)
+      alert('Error exporting products to CSV')
+    }
+  }
+
   const handleDeleteProduct = async (productId) => {
     if (confirm('Are you sure you want to delete this product?')) {
       try {
@@ -167,9 +187,9 @@ export default function AdminDashboard({ user }) {
                 <Upload className="h-4 w-4 mr-2" />
                 Import CSV
               </Button>
-              <Button variant="outline">
+              <Button variant="outline" onClick={handleExportCSV}>
                 <Download className="h-4 w-4 mr-2" />
-                Export CSV
+                Export Products CSV
               </Button>
               <Button variant="outline">
                 <RefreshCw className="h-4 w-4 mr-2" />
