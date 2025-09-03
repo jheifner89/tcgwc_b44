@@ -119,7 +119,7 @@ export default function ProductCard({ product, onRequest, quantity, onQuantityCh
             </div>
             
             {/* Stock Status - Directly under the inputs */}
-            <div className="text-left">
+            <div className="text-right">
               <span className={`text-xs font-medium`}>
                 <span className="text-gray-600">Stock: </span>
                 <span className={`${product.in_stock ? 'text-green-600' : 'text-red-600'}`}>
