@@ -62,8 +62,8 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
         sku: values[1]?.replace(/"/g, '') || '',
         name: values[2]?.replace(/"/g, '') || '',
         wholesale_price: values[3] ? parseFloat(values[3]) : 0,
-        release_date: values[4]?.replace(/"/g, '') || null,
-        orders_due_date: values[5]?.replace(/"/g, '') || null,
+        release_date: values[4]?.replace(/"/g, '') || '',
+        orders_due_date: values[5]?.replace(/"/g, '') || '',
         availability: values[6]?.replace(/"/g, '') || 'open',
         in_stock: values[7]?.replace(/"/g, '').toLowerCase() === 'true',
         image_url: values[8]?.replace(/"/g, '') || null,
@@ -78,7 +78,7 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
       }
       
       // Convert date formats from MM/DD/YYYY to YYYY-MM-DD
-      if (product.release_date && product.release_date !== '---') {
+      if (product.release_date && product.release_date !== '---' && product.release_date.trim() !== '') {
         try {
           const [month, day, year] = product.release_date.split('/')
           if (month && day && year) {
@@ -93,7 +93,7 @@ export default function ImportDialog({ open, onOpenChange, onImportComplete }) {
         product.release_date = null
       }
       
-      if (product.orders_due_date && product.orders_due_date !== '---') {
+      if (product.orders_due_date && product.orders_due_date !== '---' && product.orders_due_date.trim() !== '') {
         try {
           const [month, day, year] = product.orders_due_date.split('/')
           if (month && day && year) {
